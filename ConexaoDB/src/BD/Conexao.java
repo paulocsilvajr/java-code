@@ -7,11 +7,16 @@ import java.sql.SQLException;
 
 // Adicionar as libraries MySQL JDBC Driver e PostgreSQL JDBC Driver
 
+/**
+ * Classe genérica para conexão de banco de dados. 
+ * BD: postgresql, mysql.
+ * @author Paulo C. Silva Junior. 
+ * Baseado em: http://pt.stackoverflow.com/questions/63778/conex%C3%A3o-ao-banco-de-dados-mysql-e-java
+ */
 public class Conexao { 
     private Connection conexao; 
     private String dml;
     public ResultSet resultado;
-    private String sgbd;
     
     public Conexao(String sgbd, String bdnome, String usuario, String senha, String host){
         try{
@@ -27,15 +32,22 @@ public class Conexao {
             Class.forName(driver);
             conexao = DriverManager.getConnection(url, usuario, senha);
             
-            this.sgbd = sgbd;
-            
-            System.out.println("Conexão efetuada ao banco de dados " + bdnome);
+            System.out.println(String.format("Conexão efetuada ao banco de dados %s.", bdnome));
         }catch(ClassNotFoundException ex){
             System.err.println("Excessão Classe não encontrada: " + ex.getMessage());
         }catch(SQLException ex){
             System.err.println("Excessão SQL: " + ex.getMessage());
         }catch(Exception ex){
             System.err.println("Excessão genérica: " + ex.getMessage());
+        }
+    }
+    
+    public void fechar(){
+        try{
+            conexao.close();
+            System.out.println("Fechada conexão com o banco de dados.");
+        }catch(SQLException ex){
+            System.err.println("Excessão SQL: " + ex.getMessage());
         }
     }
     
@@ -89,9 +101,16 @@ public class Conexao {
     
     public ResultSet consultar(
             String tabela, String campos, String filtro, String ordenacao, int quant){
-        return executar(String.format(
-                "SELECT %s FROM %s WHERE %s ORDER BY %s LIMIT %d",
-                campos, tabela, filtro, ordenacao, quant));
+        String mascara = "SELECT %s FROM %s%s%s%s";
+        String quantidade;
+        
+        campos = campos.isEmpty()?"*":campos;
+        filtro = filtro.isEmpty()?"":" WHERE " + filtro;
+        ordenacao = ordenacao.isEmpty()?"":" ORDER BY " + ordenacao;
+        quantidade = quant == 0?"":" LIMIT " + quant;
+        
+        return executar(String.format(mascara, 
+                campos, tabela, filtro, ordenacao, quantidade));
     }
     
     public void inserir(String tabela, String campos, String valores){

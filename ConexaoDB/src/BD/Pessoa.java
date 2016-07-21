@@ -3,6 +3,9 @@ package BD;
 
 import java.sql.Timestamp;
 
+/**
+ * Classe genérica de pessoa.
+ */
 public class Pessoa {
     public static final String NOME_TABELA = "pessoas";
     public static final String[] NOME_CAMPOS = {"cpf", "rg", "nome", "data_inclusao"};

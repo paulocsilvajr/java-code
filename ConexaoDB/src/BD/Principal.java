@@ -1,12 +1,8 @@
 package BD;
 
-import java.util.List;
-
-
 public class Principal {
 
     public static void main(String[] args) throws Exception {
-//         ref: http://pt.stackoverflow.com/questions/63778/conex%C3%A3o-ao-banco-de-dados-mysql-e-java
         RecuperadorLogin login = new RecuperadorLogin();
         String usuario = login.usuario;
         String senha = login.senha;
@@ -16,11 +12,11 @@ public class Principal {
 
         PessoaDAO pes = new PessoaDAO(con);
         
-        for (Pessoa p : pes.listagem()) {
+        for (Pessoa p : pes.getListaPessoas()) {
             println(p + "\n");
         }
-        
 
+        con.fechar();
     }
 
     
