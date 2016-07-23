@@ -169,7 +169,7 @@ public class PessoaDAO {
         if(p.getAltValores()[1]){
             campos += String.format("%s, ", Pessoa.NOME_CAMPOS[1]);
             if(p.getRg().isEmpty())
-                valores += "NULL";
+                valores += "NULL, ";
             else
                 valores += String.format("\'%s\', ", p.getRg());
         }

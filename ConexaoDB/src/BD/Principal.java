@@ -10,13 +10,14 @@ public class Principal {
         
         Conexao con = new Conexao("postgresql", "bd_contas", usuario, senha, "localhost");
 
-        PessoaDAO pes = new PessoaDAO(con);
-        
-        for (Pessoa p : pes.getListaPessoas()) {
-            println(p + "\n");
-        }
-
-        con.fechar();
+//        PessoaDAO pes = new PessoaDAO(con);
+//        
+//        for (Pessoa p : pes.getListaPessoas()) {
+//            println(p + "\n");
+//        }
+//
+//        con.fechar();
+        new FrmPessoa(con).setVisible(true);
     }
 
     
