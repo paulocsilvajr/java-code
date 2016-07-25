@@ -27,6 +27,10 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.text.MaskFormatter;
 
+/**
+ * Classe do formulário de gerenciamento de pessoas.
+ * @author Paulo C. Silva Jr.
+ */
 public class FrmPessoa extends JFrame{
     private JLabel lblCpf, lblRg, lblNome, lblData, lblDataInclusao;
     private JButton btnSalvar, btnLimpar, btnExcluir, btnConsultar;
@@ -44,7 +48,7 @@ public class FrmPessoa extends JFrame{
     private PessoaDAO pes;
     
     private boolean exibirConsulta = false;
-    private final int X_FORM = 460, Y_FORM = 170;
+    private final int X_FORM = 460, Y_FORM = 200;
     
     FrmPessoa(Conexao con){
         this.con = con;
@@ -130,7 +134,7 @@ public class FrmPessoa extends JFrame{
         });
         
         txtPesquisa = new JTextField();
-        txtPesquisa.setBounds(10, 170, 320, 20);
+        txtPesquisa.setBounds(10, 200, 320, 20);
         txtPesquisa.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent evt){
@@ -139,7 +143,7 @@ public class FrmPessoa extends JFrame{
         });
         
         cbxPesquisa = new JComboBox();
-        cbxPesquisa.setBounds(330, 170, 110, 20);
+        cbxPesquisa.setBounds(330, 200, 110, 20);
         cbxPesquisa.addItem("cpf");
         cbxPesquisa.addItem("rg");
         cbxPesquisa.addItem("nome");
@@ -187,7 +191,7 @@ public class FrmPessoa extends JFrame{
         tblPesquisar.setRowSorter(sorter);
         
         scrollPane = new JScrollPane(tblPesquisar);
-        scrollPane.setBounds(10, 200, 440, 220);
+        scrollPane.setBounds(10, 230, 440, 220);
         
         addWindowListener(new WindowAdapter() {
             @Override
@@ -213,22 +217,19 @@ public class FrmPessoa extends JFrame{
 //        add(tblPesquisar); // Não é necessário add a tabela porque está anexada ao scrollpane.
         add(scrollPane);
         
-        txtPesquisa.setEnabled(exibirConsulta);
-        cbxPesquisa.setEnabled(exibirConsulta);
-        tblPesquisar.setEnabled(exibirConsulta);
-        scrollPane.setEnabled(exibirConsulta);
+        alterarStatusCompPesquisa();
     }
     
-    public MaskFormatter mascara(String Mascara){
+    public MaskFormatter mascara(String mascara){
         // ref. http://www.guj.com.br/t/mascara-em-um-jtextfield/30077/4
         MaskFormatter F_Mascara = new MaskFormatter();
         
         try{
-            F_Mascara.setMask(Mascara); //Atribui a mascara
+            F_Mascara.setMask(mascara); //Atribui a mascara
             F_Mascara.setPlaceholderCharacter(' '); //Caracter para preencimento 
         }
-        catch (Exception excecao) {
-            excecao.printStackTrace();
+        catch (Exception ex) {
+            System.err.println(ex.getMessage());
         } 
         
         return F_Mascara;
@@ -238,10 +239,15 @@ public class FrmPessoa extends JFrame{
         exibirConsulta = !exibirConsulta;
                 
         if(exibirConsulta)
-            setSize(X_FORM, Y_FORM + 260);
+            setSize(X_FORM, Y_FORM + 290);
         else
             setSize(X_FORM,Y_FORM);
         
+        alterarStatusCompPesquisa();
+        txtPesquisa.requestFocus();
+    }
+    
+    private void alterarStatusCompPesquisa(){
         txtPesquisa.setEnabled(exibirConsulta);
         cbxPesquisa.setEnabled(exibirConsulta);
         tblPesquisar.setEnabled(exibirConsulta);
@@ -287,8 +293,12 @@ public class FrmPessoa extends JFrame{
         }else{
             p = new Pessoa();
             p.setCpf(txtCpf.getText());
-            p.setRg(txtRg.getText());
+            p.setRg(txtRg.getText().equals("  .   .   - ")?"":txtRg.getText());
             p.setNome(txtNome.getText());
+            
+            // teste
+            System.out.println(p);
+            //
             
             boolean alterar = false;
             for(Pessoa ps: lista){
@@ -299,13 +309,13 @@ public class FrmPessoa extends JFrame{
             String acao;
             if(alterar){
                 pes.atualizar(p);
-                acao = "Atualização";
+                acao = "Atualização realizada";
             }else{
                 pes.inserir(p);
-                acao = "Cadastro";
+                acao = "Cadastro realizado";
             }
                 
-            JOptionPane.showMessageDialog(FrmPessoa.this, acao + " realizado com sucesso", 
+            JOptionPane.showMessageDialog(FrmPessoa.this, acao + " com sucesso", 
                     "Atenção", JOptionPane.INFORMATION_MESSAGE);
             
             limpar();   
@@ -314,8 +324,9 @@ public class FrmPessoa extends JFrame{
     }
     
     private void limpar(){
-        txtCpf.setText("");
-        txtRg.setText("");
+        // Para limpar jFormatedTextField  deve ser usado o método setValue(null).
+        txtCpf.setValue(null);
+        txtRg.setValue(null);
         txtNome.setText("");
         lblDataInclusao.setText("  -  -     :  :  .    ");
         
@@ -328,17 +339,20 @@ public class FrmPessoa extends JFrame{
                     "Atenção", JOptionPane.ERROR_MESSAGE);
             txtCpf.requestFocus();
         }else{
-            p = new Pessoa();
-            p.setCpf(txtCpf.getText());
-            p.setRg(txtRg.getText());
-            p.setNome(txtNome.getText());
-            
-            pes.excluir(p);
-            
-            JOptionPane.showMessageDialog(FrmPessoa.this, "Excluido pessoa com sucesso", 
-                    "Atenção", JOptionPane.ERROR_MESSAGE);
-            
-            limpar();
+            if(JOptionPane.showConfirmDialog(FrmPessoa.this, "Deseja realmente excluir esta pessoa?", 
+                    "Atenção", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == 0){
+                p = new Pessoa();
+                p.setCpf(txtCpf.getText());
+                p.setRg(txtRg.getText());
+                p.setNome(txtNome.getText());
+
+                pes.excluir(p);
+
+                JOptionPane.showMessageDialog(FrmPessoa.this, "Excluido pessoa com sucesso", 
+                        "Atenção", JOptionPane.ERROR_MESSAGE);
+
+                limpar();
+            }
         }
     }
 }
