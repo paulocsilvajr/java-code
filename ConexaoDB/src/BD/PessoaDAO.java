@@ -184,6 +184,12 @@ public class PessoaDAO {
         
         CON.atualizar(Pessoa.NOME_TABELA, campos, valores, filtro);
         
+        for(Pessoa pl: lista){
+            if(pl.getCpf().equals(p.getCpf()))
+                lista.remove(pl);
+        }
+        lista.add(p);
+        
         p.zerarAltValores();
     }
     

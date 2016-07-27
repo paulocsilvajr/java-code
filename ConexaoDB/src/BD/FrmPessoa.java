@@ -12,7 +12,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Timestamp;
-import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
@@ -43,8 +42,9 @@ public class FrmPessoa extends JFrame{
     private TableRowSorter sorter;
     
     private Pessoa p;
-    private List<Pessoa> lista;
     private Conexao con;
+    // Para a listagem de pessoas é utilizado o atributo lista contido em 
+    // PessoaDAO(usado nos métodos alimentarTable e salvar)
     private PessoaDAO pes;
     
     private boolean exibirConsulta = false;
@@ -127,7 +127,15 @@ public class FrmPessoa extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 exibirConsulta();
-                lista = pes.gerarListaPessoas();
+                // O método gerarListaPessoas consulta o BD e alimenta a lista com pessoas.
+                // Internamente ele é invocado no construtor de PessoaDAO.
+                // As operações e inserir, excluir e alterar são feitas tanto na 
+                // tabela do BD, quanto no objeto lista. Portanto não é necessário 
+                // a invocação para uma consulta, mas executando esse método, 
+                // garantirá a similaridade entre BD e lista, causando custo de 
+                // transferência de dados a cada execução.
+//                pes.gerarListaPessoas();
+                
                 if(exibirConsulta)
                     alimentarTable();
             }
@@ -165,11 +173,11 @@ public class FrmPessoa extends JFrame{
             public void mouseClicked(MouseEvent e) {
                 limpar();
                 
-                int coluna = tblPesquisar.getSelectedRow();
-                txtCpf.setText((String)tblPesquisar.getValueAt(coluna, 0));
-                txtRg.setText((String)tblPesquisar.getValueAt(coluna, 1));
-                txtNome.setText((String)tblPesquisar.getValueAt(coluna, 2));
-                lblDataInclusao.setText(tblPesquisar.getValueAt(coluna, 3).toString());
+                int linha = tblPesquisar.getSelectedRow();
+                txtCpf.setText((String)tblPesquisar.getValueAt(linha, 0));
+                txtRg.setText((String)tblPesquisar.getValueAt(linha, 1));
+                txtNome.setText((String)tblPesquisar.getValueAt(linha, 2));
+                lblDataInclusao.setText(tblPesquisar.getValueAt(linha, 3).toString());
                 
                 exibirConsulta();
             }
@@ -263,7 +271,7 @@ public class FrmPessoa extends JFrame{
         
         String cpf, rg, nome;
         Timestamp data_inclusao;
-        for(Pessoa peslist: lista){
+        for(Pessoa peslist: pes.getListaPessoas()){
             cpf = peslist.getCpf();
             rg = peslist.getRg();
             nome = peslist.getNome();
@@ -301,7 +309,7 @@ public class FrmPessoa extends JFrame{
             //
             
             boolean alterar = false;
-            for(Pessoa ps: lista){
+            for(Pessoa ps: pes.getListaPessoas()){
                 if(ps.getCpf().equals(txtCpf.getText()))
                     alterar = true;
             }
