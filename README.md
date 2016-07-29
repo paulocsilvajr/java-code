@@ -10,7 +10,7 @@ JogoBatalhaNaval: Exemplo de jogo de batalha naval em rede, usando threads.
 
 ###Licença
 
-[Licença GPL](https://github.com/paulocsilvajr/python-code/blob/master/license_gpl.txt), arquivo em anexo no repositório.
+[Licença GPL](https://github.com/paulocsilvajr/java-code/blob/master/license_gpl.txt), arquivo em anexo no repositório.
 
 ###Contato
 
