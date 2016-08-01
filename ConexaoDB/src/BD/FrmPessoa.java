@@ -304,21 +304,29 @@ public class FrmPessoa extends JFrame{
             p.setRg(txtRg.getText().equals("  .   .   - ")?"":txtRg.getText());
             p.setNome(txtNome.getText());
             
-            // teste
-            System.out.println(p);
-            //
-            
+            // Procura-se se tem uma pessoa com o cpf informado, caso encontre é 
+            // setado true na variável de alteração(alterar), incluído a data 
+            // de inclusão na pessoa e parado o laço de pesquisa.
             boolean alterar = false;
             for(Pessoa ps: pes.getListaPessoas()){
-                if(ps.getCpf().equals(txtCpf.getText()))
+                if(ps.getCpf().equals(txtCpf.getText())){
                     alterar = true;
+                    p.setData_inclusao(ps.getData_inclusao());
+                    break;
+                }
             }
             
+            // teste
+//            System.out.println(p);
+            //
+            
             String acao;
-            if(alterar){
+            if (alterar){
+                // Alteração somente se existir essa pessoa(CPF) na lista.
                 pes.atualizar(p);
                 acao = "Atualização realizada";
             }else{
+                // Somente se é uma nova pessoa(novo CPF).
                 pes.inserir(p);
                 acao = "Cadastro realizado";
             }

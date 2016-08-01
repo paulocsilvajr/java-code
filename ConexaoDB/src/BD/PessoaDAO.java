@@ -184,10 +184,15 @@ public class PessoaDAO {
         
         CON.atualizar(Pessoa.NOME_TABELA, campos, valores, filtro);
         
+        // Procura-se a pessoa na lista, remove e para o laço de pesquisa.
         for(Pessoa pl: lista){
-            if(pl.getCpf().equals(p.getCpf()))
+            if(pl.getCpf().equals(p.getCpf())){
                 lista.remove(pl);
+                break;
+            }
+                
         }
+        // Adiciona a nova pessoa no fim da lista.
         lista.add(p);
         
         p.zerarAltValores();
