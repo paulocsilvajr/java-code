@@ -189,8 +189,7 @@ public class PessoaDAO {
             if(pl.getCpf().equals(p.getCpf())){
                 lista.remove(pl);
                 break;
-            }
-                
+            }      
         }
         // Adiciona a nova pessoa no fim da lista.
         lista.add(p);
@@ -206,7 +205,11 @@ public class PessoaDAO {
         String filtro = String.format("cpf = \'%s\'", p.getCpf());
         CON.excluir(Pessoa.NOME_TABELA, filtro);
         
-        if(lista.contains(p))
-            lista.remove(p);
+        for(Pessoa pl: lista){
+            if(pl.getCpf().equals(p.getCpf())){
+                lista.remove(pl);
+                break;
+            }      
+        }
     }
 }
